@@ -1,16 +1,13 @@
-declare namespace Express {
-    export interface Request {
-        user?: JWT_PAYLOAD
-    }
-    export interface Response {
-        success(data?: any, message?: string): void
-        error(message?: string, status?: number): void
-    }
-}
+import { DecodedIdToken } from "firebase-admin/auth"
 
-type JWT_PAYLOAD = {
-    id: number
-    email: string
-    username: string
-    iat: number
+declare global {
+    namespace Express {
+        export interface Request {
+            user?: DecodedIdToken
+        }
+        export interface Response {
+            success(data?: any, message?: string): void
+            error(message?: string, status?: number): void
+        }
+    }
 }

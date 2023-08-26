@@ -1,5 +1,5 @@
 import type { NextFunction, Request, Response } from "express"
-import jwt from "jsonwebtoken"
+import { firebaseAuth } from "../utils/firebase"
 
 export async function checkLogin(
     req: Request,
@@ -7,16 +7,15 @@ export async function checkLogin(
     next: NextFunction
 ) {
     if (req.headers.authorization) {
-        const token = req.headers.authorization.split(" ")[1]
-
-        const user = jwt.verify(
-            token,
-            process.env.JWT_SECRET as string
-        ) as JWT_PAYLOAD
-
-        req.user = user
-
-        next()
+        try {
+            const token = req.headers.authorization.split(" ")[1]
+            const user = await firebaseAuth.verifyIdToken(token)
+            req.user = user
+            next()
+        } catch (error: any) {
+            console.log(error)
+            res.error(error.message, 403)
+        }
     } else {
         res.error("You are not logged in", 403)
     }

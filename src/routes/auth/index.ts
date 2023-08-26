@@ -1,77 +1,77 @@
-import bcrypt from "bcrypt"
 import { Router } from "express"
-import jwt from "jsonwebtoken"
 import {
     adjectives,
     animals,
     uniqueNamesGenerator,
 } from "unique-names-generator"
-import config from "../../config"
 import prisma from "../../databse/prisma"
+import { firebaseAuth } from "../../utils/firebase"
 import { validateLogin, validateSignup } from "./validator"
 
 const router = Router()
 
 //Normal signup
 router.post("/signup", validateSignup, async (req, res) => {
-    const user = await prisma.user.create({
-        data: {
-            email: req.body.email,
-            password: await bcrypt.hash(
-                req.body.password,
-                parseInt(config().BCRYPT_SALT_ROUND as string)
-            ),
-            username: uniqueNamesGenerator({
-                dictionaries: [adjectives, animals],
-                length: 2,
-            }),
-        },
-    })
+    try {
+        const username = uniqueNamesGenerator({
+            dictionaries: [adjectives, animals],
+            length: 2,
+        })
 
-    res.success(user, "User created successfully")
+        const firebaseUser = await firebaseAuth.createUser({
+            email: req.body.email,
+            password: req.body.password,
+            displayName: req.body.username,
+        })
+
+        const user = await prisma.user.create({
+            data: {
+                email: req.body.email,
+                username,
+                id: firebaseUser.uid,
+            },
+        })
+
+        res.success(user, "User created successfully")
+    } catch (error: any) {
+        res.error(error.message, 500)
+        return
+    }
 })
 
 //Signup with outh
 router.post("/signup/outh", async (req, res) => {
-    res.send("Not implemented yet")
+    const username = uniqueNamesGenerator({
+        dictionaries: [adjectives, animals],
+        length: 2,
+    })
+    const { email, id, avatar, displayName } = req.body
+    const user = await prisma.user.create({
+        data: {
+            email,
+            username,
+            id,
+            avatar,
+            name: displayName,
+        },
+    })
+    res.success(user, "User created successfully")
 })
 
 //Login
 router.post("/login", validateLogin, async (req, res) => {
-    const user = await prisma.user.findUnique({
-        where: {
-            email: req.body.email,
-        },
-    })
-
-    if (!user) {
-        res.error("User not found", 404)
-        return
+    try {
+        const result = await firebaseAuth.generateSignInWithEmailLink(
+            req.body.email,
+            {
+                url: "http://localhost:3000/login",
+            }
+        )
+        console.log(result)
+        res.success(result, "Email sent successfully")
+    } catch (error: any) {
+        res.error(error.message, 500)
     }
-
-    const passwordMatch = await bcrypt.compare(req.body.password, user.password)
-
-    if (!passwordMatch) {
-        res.error("Password did not match", 403)
-        return
-    }
-
-    //generate token
-    const token = await jwt.sign(
-        {
-            id: user.id,
-            email: user.email,
-            username: user.username,
-        },
-        config().JWT_SECRET as string
-    )
-
-    res.success(
-        {
-            token,
-        },
-        "User logged in successfully"
-    )
 })
 
 export default router

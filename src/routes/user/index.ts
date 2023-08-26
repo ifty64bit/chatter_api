@@ -7,7 +7,7 @@ const router = Router()
 router.get("/:id", async (req, res) => {
     const user = await prisma.user.findUnique({
         where: {
-            id: parseInt(req.params.id),
+            id: req.params.id,
         },
     })
 

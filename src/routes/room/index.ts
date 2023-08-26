@@ -5,44 +5,135 @@ const router = Router()
 
 //Creaet a room
 router.post("/", async (req, res) => {
+    //Check if user have already created a room with the same participants
+    const roomExists = await prisma.room.findFirst({
+        where: {
+            AND: [
+                {
+                    Room_User: {
+                        some: {
+                            userId: req?.user?.uid as string,
+                        },
+                    },
+                },
+                {
+                    Room_User: {
+                        some: {
+                            userId: req.body.participants[0],
+                        },
+                    },
+                },
+            ],
+        },
+        include: {
+            Room_User: {
+                select: {
+                    user: {
+                        select: {
+                            id: true,
+                            name: true,
+                            username: true,
+                            avatar: true,
+                        },
+                    },
+                },
+            },
+        },
+    })
+    if (roomExists) {
+        //return the existing room
+        //After filter and format, delete Room_User from the object
+        const existedRoomWithFormatedParticipants = {
+            ...roomExists,
+            participants: roomExists.Room_User.filter(
+                (roomUser) => roomUser.user.id !== req.user?.uid
+            ),
+        }
+        return res.success(existedRoomWithFormatedParticipants, "room_exists")
+    }
+
     const room = await prisma.room.create({
         data: {
             name: req.body.name,
-            createdBy: req.body.createdBy,
+            createdBy: req?.user?.uid as string,
             Room_User: {
                 create: [
                     {
-                        userId: req.body.createdBy,
+                        userId: req?.user?.uid as string,
                     },
-                    ...req.body.participants.map((participant: number) => ({
+                    ...req.body.participants.map((participant: string) => ({
                         userId: participant,
                     })),
                 ],
             },
         },
+        include: {
+            Room_User: {
+                select: {
+                    user: {
+                        select: {
+                            id: true,
+                            name: true,
+                            username: true,
+                            avatar: true,
+                        },
+                    },
+                },
+            },
+        },
     })
-    res.success(room, "Room Created Successfully")
+
+    const newRoomWithFormatedParticipants = {
+        ...room,
+        participants: room.Room_User.filter(
+            (roomUser) => roomUser.user.id !== req.user?.uid
+        ),
+    }
+
+    res.success(newRoomWithFormatedParticipants, "Room Created Successfully")
 })
 
 //Get room list of a user
-router.get("/user/:id", async (req, res) => {
+router.get("/user/", async (req, res) => {
     const rooms = await prisma.room.findMany({
         where: {
             Room_User: {
                 some: {
-                    userId: parseInt(req.params.id),
+                    userId: req.user?.uid as string,
                 },
             },
         },
         include: {
             Room_User: {
-                include: {
-                    user: true,
+                select: {
+                    user: {
+                        select: {
+                            id: true,
+                            name: true,
+                            username: true,
+                            avatar: true,
+                        },
+                    },
                 },
             },
         },
     })
-    res.success(rooms, "Rooms Fetched Successfully")
+    //After filter and format, delete Room_User from the object
+    const roomsWithFormatedParticipants = rooms
+        .map((room) => {
+            return {
+                ...room,
+                participants: room.Room_User.filter(
+                    (roomUser) => roomUser.user.id !== req.user?.uid
+                ),
+            }
+        })
+        .map((room) => {
+            delete (room as any).Room_User
+            return room
+        })
+
+    res.success(roomsWithFormatedParticipants, "Rooms Fetched Successfully")
 })
 
 //Get a room details
@@ -87,7 +178,7 @@ router.delete("/:id", async (req, res) => {
                 },
                 {
                     createdBy: {
-                        equals: parseInt(req.body.userId),
+                        equals: req.body.userId,
                     },
                 },
             ],
