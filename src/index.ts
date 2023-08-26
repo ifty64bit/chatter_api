@@ -12,6 +12,8 @@ import roomRouter from "./routes/room"
 import userRouter from "./routes/user"
 import { firebaseAuth } from "./utils/firebase"
 
+const PORT = process.env.PORT || 3001
+
 const app = express()
 const server = createServer(app)
 const io = new Server(server, {
@@ -71,6 +73,6 @@ io.on("connection", async (socket) => {
     console.log(io.engine.clientsCount)
 })
 
-server.listen(3001, () => {
-    console.log("Server running on port 3001")
+server.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`)
 })
