@@ -1,4 +1,2 @@
 node_modules
 .env
-service-account.ts
-/src/service-account.ts
