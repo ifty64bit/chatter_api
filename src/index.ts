@@ -79,6 +79,12 @@ io.on("connection", async (socket) => {
     console.log(io.engine.clientsCount)
 })
 
+app.get("/", (req, res) => {
+    res.send({
+        message: "Server is running",
+    })
+})
+
 server.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`)
 })
