@@ -43,7 +43,9 @@ router.get("/search/:query", async (req, res) => {
             },
         })
 
-        res.success(users)
+        //remove current user from the list
+        const filteredUsers = users.filter((user) => user.id !== req.user?.uid)
+        res.success(filteredUsers)
     } catch (error) {
         res.error("Something went wrong", 500)
     }

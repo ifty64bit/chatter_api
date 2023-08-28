@@ -1,5 +1,5 @@
 import cors from "cors"
-import dotenv from "dotenv"
+import 'dotenv/config'
 import express from "express"
 import { createServer } from "http"
 import morgan from "morgan"
@@ -11,8 +11,6 @@ import messageRouter, { sendMessage } from "./routes/message"
 import roomRouter from "./routes/room"
 import userRouter from "./routes/user"
 import { firebaseAuth } from "./utils/firebase"
-
-dotenv.config()
 
 const PORT = process.env.PORT || 3001
 
@@ -81,7 +79,7 @@ io.on("connection", async (socket) => {
     console.log(io.engine.clientsCount)
 })
 
-app.get("/", (req, res) => {
+app.get("/", (_req, res) => {
     res.send({
         message: "Server is running",
     })

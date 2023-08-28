@@ -4,8 +4,7 @@ export default {
     type: "service_account",
     project_id: "chatter-fd06e",
     private_key_id: config().private_key_id,
-    private_key:
-        config().private_key?.replace(/\\n/g, "\n") || "private_key_not_found",
+    private_key: config().private_key,
     client_email:
         "firebase-adminsdk-gaerl@chatter-fd06e.iam.gserviceaccount.com",
     client_id: "104820527627158540354",
