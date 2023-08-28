@@ -1,5 +1,5 @@
 import cors from "cors"
-import 'dotenv/config'
+import "dotenv/config"
 import express from "express"
 import { createServer } from "http"
 import morgan from "morgan"
@@ -49,15 +49,20 @@ app.use("/messages", checkLogin, messageRouter)
 
 //Register socket.io
 io.on("connection", async (socket) => {
-    const isVarified = await firebaseAuth.verifyIdToken(
-        socket.handshake.auth.token as string
-    )
-    if (!isVarified) {
-        socket.disconnect()
+    try {
+        const isVarified = await firebaseAuth.verifyIdToken(
+            socket.handshake.auth.token as string
+        )
+        if (!isVarified) {
+            socket.disconnect()
+            return
+        }
+        //Join Client their own room based on firebase UID
+        socket.join(isVarified.uid)
+    } catch (error) {
+        console.log(error)
         return
     }
-    //Join Client their own room based on firebase UID
-    socket.join(isVarified.uid)
     //Register Socket Functions
     socket.on("join_room", (roomId) => {
         socket.join(roomId)
