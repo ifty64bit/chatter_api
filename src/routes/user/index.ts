@@ -1,65 +1,19 @@
 import { Router } from "express"
-import prisma from "../../databse/prisma"
+import {
+    getAllUsers,
+    getUserById,
+    searchUser,
+} from "../../controllers/userController"
 
 const router = Router()
 
 //Get A User
-router.get("/:id", async (req, res) => {
-    try {
-        const user = await prisma.user.findUnique({
-            where: {
-                id: req.params.id,
-            },
-        })
-
-        if (!user) {
-            res.error("User not found", 404)
-            return
-        }
-
-        res.success(user, "User found")
-    } catch (error) {
-        res.error("Something went wrong", 500)
-    }
-})
+router.get("/:id", getUserById)
 
 //Search User by username or name
-router.get("/search/:query", async (req, res) => {
-    try {
-        const users = await prisma.user.findMany({
-            where: {
-                OR: [
-                    {
-                        username: {
-                            contains: req.params.query,
-                        },
-                    },
-                    {
-                        name: {
-                            contains: req.params.query,
-                        },
-                    },
-                ],
-            },
-        })
-
-        //remove current user from the list
-        const filteredUsers = users.filter((user) => user.id !== req.user?.uid)
-        res.success(filteredUsers)
-    } catch (error) {
-        res.error("Something went wrong", 500)
-    }
-})
+router.get("/search/:query", searchUser)
 
 //GET ALL Users
-router.get("/", async (req, res) => {
-    try {
-        const users = await prisma.user.findMany()
-
-        res.success(users)
-    } catch (error) {
-        res.error("Something went wrong", 500)
-    }
-})
+router.get("/", getAllUsers)
 
 export default router
