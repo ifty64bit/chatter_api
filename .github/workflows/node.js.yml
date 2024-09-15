@@ -55,13 +55,13 @@ jobs:
           ssh -i /tmp/private_key -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "
           cd /home/${{ secrets.VPS_USER }}/build_files/chatter-api && \
           ls && \
-          NODE_ENV=production \
-          PORT=1000 \
-          CLIENT_X509_CERT_URL=$CLIENT_X509_CERT_URL \
-          DATABASE_URL=$DATABASE_URL \
-          DIRECT_URL=$DIRECT_URL \
-          GOOGLE_APPLICATION_CREDENTIALS=$GOOGLE_APPLICATION_CREDENTIALS \
-          PRIVATE_KEY=$PRIVATE_KEY \
-          PRIVATE_KEY_ID=$PRIVATE_KEY_ID \
+          export NODE_ENV=production &&\
+          export PORT=1000 &&\
+          export CLIENT_X509_CERT_URL=$CLIENT_X509_CERT_URL &&\
+          export DATABASE_URL=$DATABASE_URL &&\
+          export DIRECT_URL=$DIRECT_URL &&\
+          export GOOGLE_APPLICATION_CREDENTIALS=$GOOGLE_APPLICATION_CREDENTIALS &&\
+          export PRIVATE_KEY=$PRIVATE_KEY &&\
+          export PRIVATE_KEY_ID=$PRIVATE_KEY_ID &&\
           pm2 start "npm run start" --name chatter-api || pm2 restart chatter-api
           "
