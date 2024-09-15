@@ -27,7 +27,8 @@ jobs:
     - name: Deploy to VPS
       env:
         SSH_PRIVATE_KEY: ${{ secrets.VPS_PRIVATE_KEY }}
+        SSH_PUBLIC_KEY: ${{ secrets.VPS_PUBLIC_KEY }}
       run: |
-          echo "$SSH_PRIVATE_KEY" > /tmp/private_key
+          echo "$SSH_PUBLIC_KEY" > /tmp/private_key
           chmod 600 /tmp/private_key
           rsync -avz -e "ssh -i /tmp/private_key -o StrictHostKeyChecking=no" ./build/ ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:/home/ifty/build_files/chatter-api
