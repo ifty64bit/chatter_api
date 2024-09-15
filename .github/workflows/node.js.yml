@@ -24,6 +24,13 @@ jobs:
         node-version: ${{ matrix.node-version }}
     - run: npm install
     - run: npm run build --if-present
+    - name: Create remote directory
+      env:
+        SSH_PRIVATE_KEY: ${{ secrets.VPS_PRIVATE_KEY }}
+      run: |
+          echo "$SSH_PRIVATE_KEY" > /tmp/private_key
+          chmod 600 /tmp/private_key
+          ssh -i /tmp/private_key -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "mkdir -p /home/${{ secrets.VPS_USER }}/build_files/chatter-api"
     - name: Deploy to VPS
       env:
         SSH_PRIVATE_KEY: ${{ secrets.VPS_PRIVATE_KEY }}
