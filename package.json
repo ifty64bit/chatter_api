@@ -6,7 +6,7 @@
     "scripts": {
         "dev": "tsx watch ./src/index.ts",
         "build": "tsc",
-        "start": "npx prisma generate && tsx ./src/index.ts",
+        "start": "npx prisma generate && tsx --env-file=.env ./src/index.ts",
         "preview": "node ./build/index.js"
     },
     "keywords": [
