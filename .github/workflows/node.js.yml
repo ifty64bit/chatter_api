@@ -24,6 +24,8 @@ jobs:
                   node-version: ${{ matrix.node-version }}
             - name: Install NPM Deps
               run: npm install
+            - name: Start Build
+              run: npm run build --if-present
             - name: Generate .env
               env:
                   SSH_PRIVATE_KEY: ${{ secrets.VPS_PRIVATE_KEY }}
@@ -34,7 +36,7 @@ jobs:
                   PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
                   PRIVATE_KEY_ID: ${{ secrets.PRIVATE_KEY_ID }}
               run: |
-                  touch .env
+                  touch ./build/.env
                   echo "NODE_ENV=production" >> .env
                   echo "PORT=1000" >> .env
                   echo "CLIENT_X509_CERT_URL=$CLIENT_X509_CERT_URL" >> .env
@@ -43,8 +45,6 @@ jobs:
                   echo "GOOGLE_APPLICATION_CREDENTIALS=$GOOGLE_APPLICATION_CREDENTIALS" >> .env
                   echo "PRIVATE_KEY=$PRIVATE_KEY" >> .env
                   echo "PRIVATE_KEY_ID=$PRIVATE_KEY_ID" >> .env
-            - name: Start Build
-              run: npm run build --if-present
             - name: Create remote directory
               env:
                   SSH_PRIVATE_KEY: ${{ secrets.VPS_PRIVATE_KEY }}
@@ -74,5 +74,6 @@ jobs:
                   ssh -i /tmp/private_key -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "
                   cd /home/${{ secrets.VPS_USER }}/build_files/chatter-api && \
                   ls && \
+                  which pm2 && \
                   pm2 start "npm run start" --name chatter-api || pm2 restart chatter-api
                   "
