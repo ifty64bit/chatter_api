@@ -22,7 +22,9 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: ${{ matrix.node-version }}
+    - name: Install NPM Deps
     - run: npm install
+    - name: Generate .env
     - run: npm run build --if-present
     - name: Create remote directory
       env:
@@ -38,3 +40,28 @@ jobs:
           echo "$SSH_PRIVATE_KEY" > /tmp/private_key
           chmod 600 /tmp/private_key
           rsync -avz -e "ssh -i /tmp/private_key -o StrictHostKeyChecking=no" ./build/ ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:/home/ifty/build_files/chatter-api
+    - name: Run Application
+      env:
+        SSH_PRIVATE_KEY: ${{ secrets.VPS_PRIVATE_KEY }}
+        CLIENT_X509_CERT_URL: ${{ secrets.CLIENT_X509_CERT_URL }}
+        DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        DIRECT_URL: ${{ secrets.DIRECT_URL }}
+        GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+        PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+        PRIVATE_KEY_ID: ${{ secrets.PRIVATE_KEY_ID }}
+      run: |
+          echo "$SSH_PRIVATE_KEY" > /tmp/private_key
+          chmod 600 /tmp/private_key
+          ssh -i /tmp/private_key -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "
+          cd /home/${{ secrets.VPS_USER }}/build_files/chatter-api && \
+          NODE_ENV=production PORT=1000 \
+          DB_URL=${{ secrets.DB_URL }} \
+          API_KEY=${{ secrets.API_KEY }} \
+          CLIENT_X509_CERT_URL=$CLIENT_X509_CERT_URL \
+          DATABASE_URL=$DATABASE_URL \
+          DIRECT_URL=$DIRECT_URL \
+          GOOGLE_APPLICATION_CREDENTIALS=$GOOGLE_APPLICATION_CREDENTIALS \
+          PRIVATE_KEY=$PRIVATE_KEY \
+          PRIVATE_KEY_ID=$PRIVATE_KEY_ID \
+          pm2 start npm --name chatter-api -- start || pm2 restart chatter-api
+          "
