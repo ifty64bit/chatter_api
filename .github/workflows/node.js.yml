@@ -57,8 +57,6 @@ jobs:
           ls && \
           NODE_ENV=production \
           PORT=1000 \
-          DB_URL=${{ secrets.DB_URL }} \
-          API_KEY=${{ secrets.API_KEY }} \
           CLIENT_X509_CERT_URL=$CLIENT_X509_CERT_URL \
           DATABASE_URL=$DATABASE_URL \
           DIRECT_URL=$DIRECT_URL \
