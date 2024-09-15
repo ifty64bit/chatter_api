@@ -63,5 +63,5 @@ jobs:
           export GOOGLE_APPLICATION_CREDENTIALS=$GOOGLE_APPLICATION_CREDENTIALS &&\
           export PRIVATE_KEY=$PRIVATE_KEY &&\
           export PRIVATE_KEY_ID=$PRIVATE_KEY_ID &&\
-          pm2 start "npm run start" --name chatter-api || pm2 restart chatter-api
+          pm2 start "npm run preview" --name chatter-api || pm2 restart chatter-api
           "
