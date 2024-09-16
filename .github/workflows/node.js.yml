@@ -73,7 +73,9 @@ jobs:
                   chmod 600 /tmp/private_key
                   ssh -i /tmp/private_key -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "
                   cd /home/${{ secrets.VPS_USER }}/build_files/chatter-api && \
+                  echo "Hello 0" && \
                   ls && \
+                  echo "Hello 1" &&\
                   which pm2 && \
                   pm2 start "npm run start" --name chatter-api || pm2 restart chatter-api
                   "
