@@ -50,12 +50,12 @@ jobs:
               with:
                   SSH_PRIVATE_KEY: ${{ secrets.VPS_PRIVATE_KEY }}
                   REMOTE_HOST: ${{ secrets.VPS_HOST }}
-                  REMOTE_PORT: ${{ secrets.VPS_PORT }}
                   REMOTE_USER: ${{ secrets.VPS_USER }}
                   SOURCE: "build/*"
                   TARGET: "/home/${{ secrets.VPS_USER }}/build_files/chatter-api"
                   ARGS: "-r"
-                  SCRIPT_AFTER_REQUIRED: 'pm2 start "npm run start" --name chatter-api --update-env || pm2 restart chatter-api --update-env'
+                  SCRIPT_AFTER_REQUIRED: true
+                  SCRIPT_AFTER: 'pm2 start "npm run start" --name chatter-api --update-env || pm2 restart chatter-api --update-env'
 
             # - name: Create remote directory
             #   env:
