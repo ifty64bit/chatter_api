@@ -55,12 +55,7 @@ jobs:
                   SOURCE: "build/*"
                   TARGET: "/home/${{ secrets.VPS_USER }}/build_files/chatter-api"
                   ARGS: "-r"
-                  script: |
-                      echo "Hello 0"
-                      ls
-                      echo "Hello 1"
-                      which pm2
-                      pm2 start "npm run start" --name chatter-api --update-env || pm2 restart chatter-api --update-env
+                  SCRIPT_AFTER_REQUIRED: 'pm2 start "npm run start" --name chatter-api --update-env || pm2 restart chatter-api --update-env'
 
             # - name: Create remote directory
             #   env:
