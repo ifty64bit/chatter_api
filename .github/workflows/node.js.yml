@@ -22,10 +22,13 @@ jobs:
               uses: actions/setup-node@v4
               with:
                   node-version: ${{ matrix.node-version }}
+
             - name: Install NPM Deps
               run: npm install
+
             - name: Start Build
               run: npm run build --if-present
+
             - name: Generate .env
               env:
                   SSH_PRIVATE_KEY: ${{ secrets.VPS_PRIVATE_KEY }}
@@ -45,48 +48,22 @@ jobs:
                   echo "GOOGLE_APPLICATION_CREDENTIALS=$GOOGLE_APPLICATION_CREDENTIALS" >> ./build/.env
                   echo "PRIVATE_KEY=$PRIVATE_KEY" >> ./build/.env
                   echo "PRIVATE_KEY_ID=$PRIVATE_KEY_ID" >> ./build/.env
+
             - name: Print .env contents
               run: cat ./build/.env
+
+            - name: Clean Up node_modules
+              run: rm -rf node_modules
+
             - name: Deploy to Server
               env:
                   SSH_PRIVATE_KEY: ${{ secrets.VPS_PRIVATE_KEY }}
               run: |
                   echo "$SSH_PRIVATE_KEY" > /tmp/private_key
                   chmod 600 /tmp/private_key
-                  rsync -avz -e "ssh -i /tmp/private_key -o StrictHostKeyChecking=no" ./build/ ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:/home/ifty/build_files/chatter-api
-
-            # - name: Create remote directory
-            #   env:
-            #       SSH_PRIVATE_KEY: ${{ secrets.VPS_PRIVATE_KEY }}
-
-            #   run: |
-            #       echo "$SSH_PRIVATE_KEY" > /tmp/private_key
-            #       chmod 600 /tmp/private_key
-            #       ssh -i /tmp/private_key -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "mkdir -p /home/${{ secrets.VPS_USER }}/build_files/chatter-api"
-            # - name: Deploy to VPS
-            #   env:
-            #       SSH_PRIVATE_KEY: ${{ secrets.VPS_PRIVATE_KEY }}
-            #   run: |
-            #       echo "$SSH_PRIVATE_KEY" > /tmp/private_key
-            #       chmod 600 /tmp/private_key
-            #       rsync -avz -e "ssh -i /tmp/private_key -o StrictHostKeyChecking=no" ./build/ ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:/home/ifty/build_files/chatter-api
-            # - name: Run Application
-            #   env:
-            #       SSH_PRIVATE_KEY: ${{ secrets.VPS_PRIVATE_KEY }}
-            #       CLIENT_X509_CERT_URL: ${{ secrets.CLIENT_X509_CERT_URL }}
-            #       DATABASE_URL: ${{ secrets.DATABASE_URL }}
-            #       DIRECT_URL: ${{ secrets.DIRECT_URL }}
-            #       GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
-            #       PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
-            #       PRIVATE_KEY_ID: ${{ secrets.PRIVATE_KEY_ID }}
-            #   run: |
-            #       echo "$SSH_PRIVATE_KEY" > /tmp/private_key
-            #       chmod 600 /tmp/private_key
-            #       ssh -i /tmp/private_key -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "
-            #       cd /home/${{ secrets.VPS_USER }}/build_files/chatter-api && \
-            #       echo "Hello 0" && \
-            #       ls && \
-            #       echo "Hello 1" &&\
-            #       which pm2 && \
-            #       pm2 start "npm run start" --name chatter-api || pm2 restart chatter-api
-            #       "
+                  rsync -avz -e "ssh -i /tmp/private_key -o StrictHostKeyChecking=no" . ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:/home/ifty/build_files/chatter-api
+            - name: Install Production Dependencies on VPS
+              env:
+                SSH_PRIVATE_KEY: ${{ secrets.VPS_PRIVATE_KEY }}
+            run: |
+                ssh -i /tmp/private_key -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} 'cd /home/ifty/build_files/chatter-api && npm ci --production && ls && ls ./build'
