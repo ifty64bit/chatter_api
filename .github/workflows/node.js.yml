@@ -48,14 +48,12 @@ jobs:
             - name: Print .env contents
               run: cat ./build/.env
             - name: Deploy to Server
-              uses: easingthemes/ssh-deploy@main
-              with:
+              env:
                   SSH_PRIVATE_KEY: ${{ secrets.VPS_PRIVATE_KEY }}
-                  REMOTE_HOST: ${{ secrets.VPS_HOST }}
-                  REMOTE_USER: ${{ secrets.VPS_USER }}
-                  SOURCE: "build/*"
-                  TARGET: "/home/${{ secrets.VPS_USER }}/build_files/chatter-api"
-                  ARGS: "-rlgoDzvc -i"
+              run: |
+                  echo "$SSH_PRIVATE_KEY" > /tmp/private_key
+                  chmod 600 /tmp/private_key
+                  rsync -avz -e "ssh -i /tmp/private_key -o StrictHostKeyChecking=no" ./build/ ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:/home/ifty/build_files/chatter-api
 
             # - name: Create remote directory
             #   env:
