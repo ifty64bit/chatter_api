@@ -5,7 +5,7 @@
     "main": "./src/index.ts",
     "scripts": {
         "dev": "tsx watch ./src/index.ts",
-        "build": "npx prisma generate && esbuild ./src/index.ts --platform=node --bundle --minify --outfile=build/index.js",
+        "build": "npx prisma generate && esbuild ./src/index.ts --platform=node --bundle --minify --main-fields=module,main --outfile=build/index.js",
         "start": "npx prisma generate && tsx --env-file=.env ./src/index.ts",
         "preview": "node --env-file=.env ./build/index.js"
     },
