@@ -61,7 +61,7 @@ jobs:
               run: |
                   echo "$SSH_PRIVATE_KEY" > /tmp/private_key
                   chmod 600 /tmp/private_key
-                  rsync -avz -e "ssh -i /tmp/private_key -o StrictHostKeyChecking=no" . ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:/home/ifty/build_files/chatter-api
+                  rsync -avz -e "ssh -i /tmp/private_key -o StrictHostKeyChecking=no" ./ ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:/home/ifty/build_files/chatter-api
             - name: Install Production Dependencies on VPS
               env:
                   SSH_PRIVATE_KEY: ${{ secrets.VPS_PRIVATE_KEY }}
