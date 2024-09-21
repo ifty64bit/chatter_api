@@ -66,4 +66,4 @@ jobs:
               env:
                   SSH_PRIVATE_KEY: ${{ secrets.VPS_PRIVATE_KEY }}
               run: |
-                  ssh -i /tmp/private_key -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} 'cd /home/ifty/build_files/chatter-api && npm ci --production && ls && ls ./build'
+                  ssh -i /tmp/private_key -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} 'cd /home/ifty/build_files/chatter-api &&export NVM_DIR=~/.nvm && source ~/.nvm/nvm.sh && npm ci --production && ls && ls ./build'
