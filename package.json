@@ -7,7 +7,7 @@
         "dev": "tsx watch ./src/index.ts",
         "build": "tsc",
         "start": "npx prisma generate && tsx --env-file=.env ./src/index.ts",
-        "preview": "node ./build/index.js"
+        "preview": "node --env-file=.env ./build/index.js"
     },
     "keywords": [
         "Chat",
