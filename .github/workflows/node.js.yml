@@ -55,7 +55,6 @@ jobs:
                   REMOTE_USER: ${{ secrets.VPS_USER }}
                   SOURCE: "build/*"
                   TARGET: "/home/${{ secrets.VPS_USER }}/build_files/chatter-api"
-                  ARGS: "-zhave"
 
             # - name: Create remote directory
             #   env:
