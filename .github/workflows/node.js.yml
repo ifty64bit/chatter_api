@@ -37,14 +37,14 @@ jobs:
                   PRIVATE_KEY_ID: ${{ secrets.PRIVATE_KEY_ID }}
               run: |
                   touch ./build/.env
-                  echo "NODE_ENV=production" >> .env
-                  echo "PORT=1000" >> .env
-                  echo "CLIENT_X509_CERT_URL=$CLIENT_X509_CERT_URL" >> .env
-                  echo "DATABASE_URL=$DATABASE_URL" >> .env
-                  echo "DIRECT_URL=$DIRECT_URL" >> .env
-                  echo "GOOGLE_APPLICATION_CREDENTIALS=$GOOGLE_APPLICATION_CREDENTIALS" >> .env
-                  echo "PRIVATE_KEY=$PRIVATE_KEY" >> .env
-                  echo "PRIVATE_KEY_ID=$PRIVATE_KEY_ID" >> .env
+                  echo "NODE_ENV=production" >> ./build/.env
+                  echo "PORT=1000" >> ./build/.env
+                  echo "CLIENT_X509_CERT_URL=$CLIENT_X509_CERT_URL" >> ./build/.env
+                  echo "DATABASE_URL=$DATABASE_URL" >> ./build/.env
+                  echo "DIRECT_URL=$DIRECT_URL" >> ./build/.env
+                  echo "GOOGLE_APPLICATION_CREDENTIALS=$GOOGLE_APPLICATION_CREDENTIALS" >> ./build/.env
+                  echo "PRIVATE_KEY=$PRIVATE_KEY" >> ./build/.env
+                  echo "PRIVATE_KEY_ID=$PRIVATE_KEY_ID" >> ./build/.env
             - name: Deploy to Server
               uses: easingthemes/ssh-deploy@main
               with:
