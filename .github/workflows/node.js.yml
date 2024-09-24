@@ -41,6 +41,7 @@ jobs:
                       echo "PRIVATE_KEY_ID=$PRIVATE_KEY_ID" >> .env
                       git status
                       npm i
+                      npm run build
                       if pm2 describe $APP_NAME > /dev/null; then
                         echo "App is running. Performing rolling update..."
                         pm2 reload $APP_NAME --update-env
