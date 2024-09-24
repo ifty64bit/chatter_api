@@ -25,12 +25,14 @@ jobs:
                   GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
                   PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
                   PRIVATE_KEY_ID: ${{ secrets.PRIVATE_KEY_ID }}
+                  PORT: 1000
               uses: appleboy/ssh-action@master
               with:
                   host: ${{ secrets.VPS_HOST }}
                   username: ${{ secrets.VPS_USER }}
                   key: ${{ secrets.VPS_PRIVATE_KEY }}
                   port: 22
+                  envs: CLIENT_X509_CERT_URL,DATABASE_URL,DIRECT_URL,GOOGLE_APPLICATION_CREDENTIALS,PRIVATE_KEY,PRIVATE_KEY_ID,PORT
                   script: |
                       APP_NAME=chatter-api
                       export NVM_DIR=~/.nvm
@@ -41,7 +43,7 @@ jobs:
                       > .env
                       touch .env
                       echo "NODE_ENV=production" >> .env
-                      echo "PORT=1000" >> .env
+                      echo "PORT=$PORT" >> .env
                       echo "CLIENT_X509_CERT_URL=$CLIENT_X509_CERT_URL" >> .env
                       echo "DATABASE_URL=$DATABASE_URL" >> .env
                       echo "DIRECT_URL=$DIRECT_URL" >> .env
