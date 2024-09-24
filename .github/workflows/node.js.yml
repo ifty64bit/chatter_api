@@ -24,8 +24,10 @@ jobs:
                   key: ${{ secrets.VPS_PRIVATE_KEY }}
                   port: 22
                   script: |
+                      export NVM_DIR=~/.nvm
+                      source ~/.nvm/nvm.sh
                       cd ~/build_files
-                      git pull origin master
+                      git pull origin master 
                       touch .env
                       echo "NODE_ENV=production" >> .env
                       echo "PORT=1000" >> .env
