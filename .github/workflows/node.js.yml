@@ -24,10 +24,12 @@ jobs:
                   key: ${{ secrets.VPS_PRIVATE_KEY }}
                   port: 22
                   script: |
+                      APP_NAME=chatter-api
                       export NVM_DIR=~/.nvm
                       source ~/.nvm/nvm.sh
                       cd ~/build_files
-                      git pull origin master 
+                      git pull origin master
+                      cd chatter-api
                       touch .env
                       echo "NODE_ENV=production" >> .env
                       echo "PORT=1000" >> .env
@@ -39,7 +41,14 @@ jobs:
                       echo "PRIVATE_KEY_ID=$PRIVATE_KEY_ID" >> .env
                       git status
                       npm i
-                      pm2 list
+                      if pm2 describe $APP_NAME > /dev/null; then
+                        echo "App is running. Performing rolling update..."
+                        pm2 reload $APP_NAME --update-env
+                      else
+                        echo "App not found. Starting the app..."
+                        pm2 stop $APP_NAME || true
+                        pm2 start "npm run start" --name $APP_NAME
+                      fi
 
             # - name: Generate .env
             #   env:
