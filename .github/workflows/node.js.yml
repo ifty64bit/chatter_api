@@ -24,7 +24,7 @@ jobs:
                   key: ${{ secrets.VPS_PRIVATE_KEY }}
                   port: 22
                   script: |
-                      cd ~/home/ifty/build_files
+                      cd ~/build_files
                       git pull origin master
                       touch .env
                       echo "NODE_ENV=production" >> .env
