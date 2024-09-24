@@ -5,8 +5,8 @@
     "main": "./src/index.ts",
     "scripts": {
         "dev": "tsx watch ./src/index.ts",
-        "build": "npx prisma generate && esbuild ./src/index.ts --platform=node --bundle --minify --main-fields=module,main --outfile=build/index.js",
-        "start": "npx prisma generate && tsx --env-file=.env ./src/index.ts",
+        "build": "npx prisma generate && tsc",
+        "start": "npx prisma generate && node --env-file=.env ./build/index.js",
         "preview": "node --env-file=.env ./build/index.js"
     },
     "keywords": [
@@ -23,7 +23,7 @@
     "author": "Ifthe Kharul Islam (Ifty64Bit)",
     "license": "ISC",
     "dependencies": {
-        "@prisma/client": "5.19.1",
+        "@prisma/client": "^5.20.0",
         "bcrypt": "^5.1.0",
         "cors": "^2.8.5",
         "dotenv": "^16.3.1",
@@ -51,7 +51,7 @@
         "eslint-config-prettier": "^9.0.0",
         "prettier": "^3.0.1",
         "prettier-plugin-organize-imports": "^3.2.3",
-        "prisma": "^5.19.1",
+        "prisma": "^5.20.0",
         "ts-node-dev": "^2.0.0",
         "tsx": "^3.12.7",
         "typescript": "^5.1.6"
