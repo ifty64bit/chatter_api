@@ -53,6 +53,8 @@ jobs:
                       git status
                       npm i
                       npm run build
+                      # Delete all files in node_modules except .prisma directory
+                      find node_modules -mindepth 1 -not -path "node_modules/.prisma/*" -delete
                       if pm2 describe $APP_NAME > /dev/null; then
                         echo "App is running. Performing rolling update..."
                         pm2 reload $APP_NAME --update-env
